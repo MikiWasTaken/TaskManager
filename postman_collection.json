@@ -1,0 +1,668 @@
+{
+  "info": {
+    "name": "Task Manager API",
+    "_postman_id": "taskmanager-collection-v1",
+    "description": "Complete API showcase. Run the three login requests first — tokens are saved automatically as collection variables.\n\nSeed users (all passwords: 'password'):\n• alice@example.com — ADMIN, owns Apollo + Gamma\n• bob@example.com  — USER, member of Apollo + Beta (owns Beta)\n• carol@example.com — USER, member of Apollo + Beta\n• dave@example.com  — USER, no project memberships\n• eve@example.com   — USER, inactive account",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl",       "value": "http://localhost:8080" },
+    { "key": "aliceToken",    "value": "" },
+    { "key": "bobToken",      "value": "" },
+    { "key": "carolToken",    "value": "" },
+    { "key": "daveToken",     "value": "" },
+    { "key": "aliceId",       "value": "67d0ae7b-06a6-43d7-99a4-90933f024a39" },
+    { "key": "bobId",         "value": "4ef21d5e-17d4-4b0b-be0d-c5888b19aacc" },
+    { "key": "carolId",       "value": "4c0f7f22-fedc-44f1-afb6-75a469ba45a9" },
+    { "key": "daveId",        "value": "7b0bd519-2b30-41a3-b7cf-3ed18f01959b" },
+    { "key": "apolloId",      "value": "7be1ce72-9da1-435c-84ba-d61d9e732970" },
+    { "key": "betaId",        "value": "3360799c-d9f5-4d0b-ac3c-977cc9393f09" },
+    { "key": "gammaId",       "value": "0a5a7f17-c24d-49af-84aa-bb933c1fd799" },
+    { "key": "ciTaskId",      "value": "eb5a0b7b-bc12-4fa2-842d-0abd8189c058" },
+    { "key": "dbTaskId",      "value": "45437dd2-4dd4-45de-b5ff-76b61b3a0479" },
+    { "key": "deletedTaskId", "value": "7c3f1525-4049-4a3a-b93b-e55a30b2ee01" },
+    { "key": "betaTaskId",    "value": "be78caa8-835a-43a6-a054-8809ef4895cb" },
+    { "key": "gammaTaskId",   "value": "faa26561-cb3d-4190-a479-748950bb770f" },
+    { "key": "doc1Id",        "value": "26b3326a-c541-43c1-b855-25931b4d6d60" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login — Alice (ADMIN)",
+          "event": [{ "listen": "test", "script": { "exec": ["if (pm.response.code === 200) { pm.collectionVariables.set('aliceToken', pm.response.json().token); }"], "type": "text/javascript" } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"alice@example.com\",\n  \"password\": \"password\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"] }
+          }
+        },
+        {
+          "name": "Login — Bob (USER)",
+          "event": [{ "listen": "test", "script": { "exec": ["if (pm.response.code === 200) { pm.collectionVariables.set('bobToken', pm.response.json().token); }"], "type": "text/javascript" } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"bob@example.com\",\n  \"password\": \"password\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"] }
+          }
+        },
+        {
+          "name": "Login — Carol (USER)",
+          "event": [{ "listen": "test", "script": { "exec": ["if (pm.response.code === 200) { pm.collectionVariables.set('carolToken', pm.response.json().token); }"], "type": "text/javascript" } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"carol@example.com\",\n  \"password\": \"password\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"] }
+          }
+        },
+        {
+          "name": "Login — Dave (outsider USER)",
+          "event": [{ "listen": "test", "script": { "exec": ["if (pm.response.code === 200) { pm.collectionVariables.set('daveToken', pm.response.json().token); }"], "type": "text/javascript" } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"dave@example.com\",\n  \"password\": \"password\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"] }
+          }
+        },
+        {
+          "name": "Register new user",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"frank@example.com\",\n  \"password\": \"password123\",\n  \"firstName\": \"Frank\",\n  \"lastName\": \"Test\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/auth/register", "host": ["{{baseUrl}}"], "path": ["api", "auth", "register"] }
+          }
+        },
+        {
+          "name": "[ERROR] Wrong password → 400",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"alice@example.com\",\n  \"password\": \"wrong\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"] }
+          }
+        },
+        {
+          "name": "[ERROR] Inactive account (Eve) → 403",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"eve@example.com\",\n  \"password\": \"password\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"] }
+          }
+        },
+        {
+          "name": "[ERROR] No token provided → 401",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/users/me", "host": ["{{baseUrl}}"], "path": ["api", "users", "me"] }
+          }
+        },
+        {
+          "name": "[ERROR] Register — password too short → 400",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"short@example.com\",\n  \"password\": \"abc\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/auth/register", "host": ["{{baseUrl}}"], "path": ["api", "auth", "register"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "View own profile",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{bobToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/users/me", "host": ["{{baseUrl}}"], "path": ["api", "users", "me"] }
+          }
+        },
+        {
+          "name": "Update own profile — name",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{bobToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"firstName\": \"Bobby\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/users/me", "host": ["{{baseUrl}}"], "path": ["api", "users", "me"] }
+          }
+        },
+        {
+          "name": "Update own profile — change password",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{bobToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"currentPassword\": \"password\",\n  \"newPassword\": \"newpassword\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/users/me", "host": ["{{baseUrl}}"], "path": ["api", "users", "me"] }
+          }
+        },
+        {
+          "name": "List own projects",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{bobToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/users/me/projects", "host": ["{{baseUrl}}"], "path": ["api", "users", "me", "projects"] }
+          }
+        },
+        {
+          "name": "[ADMIN] List all users",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{aliceToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/users", "host": ["{{baseUrl}}"], "path": ["api", "users"] }
+          }
+        },
+        {
+          "name": "[ADMIN] Promote Bob to ADMIN",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{aliceToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"role\": \"ADMIN\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/users/{{bobId}}", "host": ["{{baseUrl}}"], "path": ["api", "users", "{{bobId}}"] }
+          }
+        },
+        {
+          "name": "[ADMIN] Deactivate Bob",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{aliceToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"isActive\": false\n}" },
+            "url": { "raw": "{{baseUrl}}/api/users/{{bobId}}", "host": ["{{baseUrl}}"], "path": ["api", "users", "{{bobId}}"] }
+          }
+        },
+        {
+          "name": "[ADMIN] Reactivate Bob",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{aliceToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"isActive\": true\n}" },
+            "url": { "raw": "{{baseUrl}}/api/users/{{bobId}}", "host": ["{{baseUrl}}"], "path": ["api", "users", "{{bobId}}"] }
+          }
+        },
+        {
+          "name": "[ERROR] Non-admin lists all users → 403",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{bobToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/users", "host": ["{{baseUrl}}"], "path": ["api", "users"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Projects",
+      "item": [
+        {
+          "name": "[ADMIN] List all projects (incl. soft-deleted Gamma)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{aliceToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/projects", "host": ["{{baseUrl}}"], "path": ["api", "projects"] }
+          }
+        },
+        {
+          "name": "Get Apollo by ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{bobToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/projects/{{apolloId}}", "host": ["{{baseUrl}}"], "path": ["api", "projects", "{{apolloId}}"] }
+          }
+        },
+        {
+          "name": "Create project",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{bobToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Delta\",\n  \"description\": \"New project\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/projects", "host": ["{{baseUrl}}"], "path": ["api", "projects"] }
+          }
+        },
+        {
+          "name": "Update Apollo — description",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{aliceToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"description\": \"Updated backend rewrite project\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/projects/{{apolloId}}", "host": ["{{baseUrl}}"], "path": ["api", "projects", "{{apolloId}}"] }
+          }
+        },
+        {
+          "name": "Update Apollo — mark COMPLETE",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{aliceToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"projectStatus\": \"COMPLETE\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/projects/{{apolloId}}", "host": ["{{baseUrl}}"], "path": ["api", "projects", "{{apolloId}}"] }
+          }
+        },
+        {
+          "name": "Update Apollo — reactivate (ACTIVE)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{aliceToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"projectStatus\": \"ACTIVE\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/projects/{{apolloId}}", "host": ["{{baseUrl}}"], "path": ["api", "projects", "{{apolloId}}"] }
+          }
+        },
+        {
+          "name": "Transfer ownership of Apollo to Bob",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{aliceToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"owner\": \"{{bobId}}\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/projects/{{apolloId}}", "host": ["{{baseUrl}}"], "path": ["api", "projects", "{{apolloId}}"] }
+          }
+        },
+        {
+          "name": "Soft-delete a project",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{aliceToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/projects/{{apolloId}}", "host": ["{{baseUrl}}"], "path": ["api", "projects", "{{apolloId}}"] }
+          }
+        },
+        {
+          "name": "[ERROR] Non-admin lists all projects → 403",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{bobToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/projects", "host": ["{{baseUrl}}"], "path": ["api", "projects"] }
+          }
+        },
+        {
+          "name": "[ERROR] Outsider Dave accesses Apollo → 403",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{daveToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/projects/{{apolloId}}", "host": ["{{baseUrl}}"], "path": ["api", "projects", "{{apolloId}}"] }
+          }
+        },
+        {
+          "name": "[ERROR] Update COMPLETE project (Beta) → 400",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{bobToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"description\": \"Trying to change a complete project\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/projects/{{betaId}}", "host": ["{{baseUrl}}"], "path": ["api", "projects", "{{betaId}}"] }
+          }
+        },
+        {
+          "name": "[ERROR] Transfer ownership to non-member → 400",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{aliceToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"owner\": \"{{daveId}}\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/projects/{{apolloId}}", "host": ["{{baseUrl}}"], "path": ["api", "projects", "{{apolloId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Project Members",
+      "item": [
+        {
+          "name": "List members of Apollo",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{bobToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/projects/{{apolloId}}/members", "host": ["{{baseUrl}}"], "path": ["api", "projects", "{{apolloId}}", "members"] }
+          }
+        },
+        {
+          "name": "Add Dave to Apollo",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{aliceToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/projects/{{apolloId}}/members/{{daveId}}", "host": ["{{baseUrl}}"], "path": ["api", "projects", "{{apolloId}}", "members", "{{daveId}}"] }
+          }
+        },
+        {
+          "name": "Remove Dave from Apollo",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{aliceToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/projects/{{apolloId}}/members/{{daveId}}", "host": ["{{baseUrl}}"], "path": ["api", "projects", "{{apolloId}}", "members", "{{daveId}}"] }
+          }
+        },
+        {
+          "name": "Carol leaves Apollo (self-removal)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{carolToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/projects/{{apolloId}}/members/{{carolId}}", "host": ["{{baseUrl}}"], "path": ["api", "projects", "{{apolloId}}", "members", "{{carolId}}"] }
+          }
+        },
+        {
+          "name": "[ERROR] Add member to COMPLETE project (Beta) → 400",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{aliceToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/projects/{{betaId}}/members/{{daveId}}", "host": ["{{baseUrl}}"], "path": ["api", "projects", "{{betaId}}", "members", "{{daveId}}"] }
+          }
+        },
+        {
+          "name": "[ERROR] Remove owner from project → 403",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{aliceToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/projects/{{apolloId}}/members/{{aliceId}}", "host": ["{{baseUrl}}"], "path": ["api", "projects", "{{apolloId}}", "members", "{{aliceId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tasks",
+      "item": [
+        {
+          "name": "List all tasks in Apollo",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{bobToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/projects/{{apolloId}}/tasks", "host": ["{{baseUrl}}"], "path": ["api", "projects", "{{apolloId}}", "tasks"] }
+          }
+        },
+        {
+          "name": "Filter by status — TODO",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{bobToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/projects/{{apolloId}}/tasks?taskStatus=TODO",
+              "host": ["{{baseUrl}}"], "path": ["api", "projects", "{{apolloId}}", "tasks"],
+              "query": [{ "key": "taskStatus", "value": "TODO" }]
+            }
+          }
+        },
+        {
+          "name": "Filter by priority — HIGH",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{bobToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/projects/{{apolloId}}/tasks?taskPriority=HIGH",
+              "host": ["{{baseUrl}}"], "path": ["api", "projects", "{{apolloId}}", "tasks"],
+              "query": [{ "key": "taskPriority", "value": "HIGH" }]
+            }
+          }
+        },
+        {
+          "name": "Filter by status + priority",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{bobToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/projects/{{apolloId}}/tasks?taskStatus=TODO&taskPriority=HIGH",
+              "host": ["{{baseUrl}}"], "path": ["api", "projects", "{{apolloId}}", "tasks"],
+              "query": [{ "key": "taskStatus", "value": "TODO" }, { "key": "taskPriority", "value": "HIGH" }]
+            }
+          }
+        },
+        {
+          "name": "Filter by deadline — after 2026-05-01",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{bobToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/projects/{{apolloId}}/tasks?deadlineAfter=2026-05-01T00:00:00",
+              "host": ["{{baseUrl}}"], "path": ["api", "projects", "{{apolloId}}", "tasks"],
+              "query": [{ "key": "deadlineAfter", "value": "2026-05-01T00:00:00" }]
+            }
+          }
+        },
+        {
+          "name": "Filter by deadline — before 2026-06-01",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{bobToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/projects/{{apolloId}}/tasks?deadlineBefore=2026-06-01T00:00:00",
+              "host": ["{{baseUrl}}"], "path": ["api", "projects", "{{apolloId}}", "tasks"],
+              "query": [{ "key": "deadlineBefore", "value": "2026-06-01T00:00:00" }]
+            }
+          }
+        },
+        {
+          "name": "Filter by creation date — after 2026-01-13",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{bobToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/projects/{{apolloId}}/tasks?createdAfter=2026-01-13T00:00:00",
+              "host": ["{{baseUrl}}"], "path": ["api", "projects", "{{apolloId}}", "tasks"],
+              "query": [{ "key": "createdAfter", "value": "2026-01-13T00:00:00" }]
+            }
+          }
+        },
+        {
+          "name": "Filter by creation date — before 2026-01-12",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{bobToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/projects/{{apolloId}}/tasks?createdBefore=2026-01-12T00:00:00",
+              "host": ["{{baseUrl}}"], "path": ["api", "projects", "{{apolloId}}", "tasks"],
+              "query": [{ "key": "createdBefore", "value": "2026-01-12T00:00:00" }]
+            }
+          }
+        },
+        {
+          "name": "Filter — combined (status + deadline range)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{bobToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/projects/{{apolloId}}/tasks?taskStatus=IN_PROGRESS&deadlineAfter=2026-01-01T00:00:00",
+              "host": ["{{baseUrl}}"], "path": ["api", "projects", "{{apolloId}}", "tasks"],
+              "query": [
+                { "key": "taskStatus", "value": "IN_PROGRESS" },
+                { "key": "deadlineAfter", "value": "2026-01-01T00:00:00" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get single task (CI pipeline)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{bobToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/projects/{{apolloId}}/tasks/{{ciTaskId}}", "host": ["{{baseUrl}}"], "path": ["api", "projects", "{{apolloId}}", "tasks", "{{ciTaskId}}"] }
+          }
+        },
+        {
+          "name": "[ADMIN] Get soft-deleted task",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{aliceToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/projects/{{apolloId}}/tasks/{{deletedTaskId}}", "host": ["{{baseUrl}}"], "path": ["api", "projects", "{{apolloId}}", "tasks", "{{deletedTaskId}}"] }
+          }
+        },
+        {
+          "name": "[ADMIN] Get task in deleted project (Gamma)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{aliceToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/projects/{{gammaId}}/tasks/{{gammaTaskId}}", "host": ["{{baseUrl}}"], "path": ["api", "projects", "{{gammaId}}", "tasks", "{{gammaTaskId}}"] }
+          }
+        },
+        {
+          "name": "[ADMIN] List all tasks in deleted project (Gamma)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{aliceToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/projects/{{gammaId}}/tasks", "host": ["{{baseUrl}}"], "path": ["api", "projects", "{{gammaId}}", "tasks"] }
+          }
+        },
+        {
+          "name": "Create task — assigned to Carol",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{bobToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"Write API docs\",\n  \"description\": \"Document all endpoints\",\n  \"priority\": \"LOW\",\n  \"status\": \"TODO\",\n  \"assigneeId\": \"{{carolId}}\",\n  \"deadline\": \"2026-09-01T12:00:00\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/projects/{{apolloId}}/tasks", "host": ["{{baseUrl}}"], "path": ["api", "projects", "{{apolloId}}", "tasks"] }
+          }
+        },
+        {
+          "name": "Create task — unassigned",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{bobToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"Investigate memory leak\",\n  \"priority\": \"HIGH\",\n  \"status\": \"TODO\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/projects/{{apolloId}}/tasks", "host": ["{{baseUrl}}"], "path": ["api", "projects", "{{apolloId}}", "tasks"] }
+          }
+        },
+        {
+          "name": "Update task — change status",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{bobToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"IN_PROGRESS\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/projects/{{apolloId}}/tasks/{{ciTaskId}}", "host": ["{{baseUrl}}"], "path": ["api", "projects", "{{apolloId}}", "tasks", "{{ciTaskId}}"] }
+          }
+        },
+        {
+          "name": "Update task — reassign to Carol",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{aliceToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"assigneeId\": \"{{carolId}}\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/projects/{{apolloId}}/tasks/{{ciTaskId}}", "host": ["{{baseUrl}}"], "path": ["api", "projects", "{{apolloId}}", "tasks", "{{ciTaskId}}"] }
+          }
+        },
+        {
+          "name": "Soft-delete a task",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{aliceToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/projects/{{apolloId}}/tasks/{{ciTaskId}}", "host": ["{{baseUrl}}"], "path": ["api", "projects", "{{apolloId}}", "tasks", "{{ciTaskId}}"] }
+          }
+        },
+        {
+          "name": "[ERROR] Outsider Dave lists tasks → 403",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{daveToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/projects/{{apolloId}}/tasks", "host": ["{{baseUrl}}"], "path": ["api", "projects", "{{apolloId}}", "tasks"] }
+          }
+        },
+        {
+          "name": "[ERROR] Assign task to non-member Dave → 403",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{aliceToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"assigneeId\": \"{{daveId}}\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/projects/{{apolloId}}/tasks/{{ciTaskId}}", "host": ["{{baseUrl}}"], "path": ["api", "projects", "{{apolloId}}", "tasks", "{{ciTaskId}}"] }
+          }
+        },
+        {
+          "name": "[ERROR] Create task in COMPLETE project (Beta) → 400",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{bobToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"New task\",\n  \"priority\": \"LOW\",\n  \"status\": \"TODO\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/projects/{{betaId}}/tasks", "host": ["{{baseUrl}}"], "path": ["api", "projects", "{{betaId}}", "tasks"] }
+          }
+        },
+        {
+          "name": "[ERROR] Update task in COMPLETE project (Beta) → 400",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{bobToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"TODO\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/projects/{{betaId}}/tasks/{{betaTaskId}}", "host": ["{{baseUrl}}"], "path": ["api", "projects", "{{betaId}}", "tasks", "{{betaTaskId}}"] }
+          }
+        },
+        {
+          "name": "[ERROR] Task title too long → 400",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{bobToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/projects/{{apolloId}}/tasks", "host": ["{{baseUrl}}"], "path": ["api", "projects", "{{apolloId}}", "tasks"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Documents",
+      "item": [
+        {
+          "name": "List documents in Apollo",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{bobToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/projects/{{apolloId}}/documents", "host": ["{{baseUrl}}"], "path": ["api", "projects", "{{apolloId}}", "documents"] }
+          }
+        },
+        {
+          "name": "Upload a file",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{bobToken}}" }],
+            "body": {
+              "mode": "formdata",
+              "formdata": [{ "key": "file", "type": "file", "src": "" }]
+            },
+            "url": { "raw": "{{baseUrl}}/api/projects/{{apolloId}}/documents", "host": ["{{baseUrl}}"], "path": ["api", "projects", "{{apolloId}}", "documents"] }
+          }
+        },
+        {
+          "name": "Download a document",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{bobToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/projects/{{apolloId}}/documents/{{doc1Id}}/download", "host": ["{{baseUrl}}"], "path": ["api", "projects", "{{apolloId}}", "documents", "{{doc1Id}}", "download"] }
+          }
+        },
+        {
+          "name": "Delete a document",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{bobToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/projects/{{apolloId}}/documents/{{doc1Id}}", "host": ["{{baseUrl}}"], "path": ["api", "projects", "{{apolloId}}", "documents", "{{doc1Id}}"] }
+          }
+        },
+        {
+          "name": "[ERROR] Outsider Dave uploads → 400",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{daveToken}}" }],
+            "body": {
+              "mode": "formdata",
+              "formdata": [{ "key": "file", "type": "file", "src": "" }]
+            },
+            "url": { "raw": "{{baseUrl}}/api/projects/{{apolloId}}/documents", "host": ["{{baseUrl}}"], "path": ["api", "projects", "{{apolloId}}", "documents"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Audit Logs",
+      "item": [
+        {
+          "name": "[ADMIN] List all audit log entries",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{aliceToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/admin/audit-logs", "host": ["{{baseUrl}}"], "path": ["api", "admin", "audit-logs"] }
+          }
+        },
+        {
+          "name": "[ERROR] Non-admin accesses audit logs → 403",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{bobToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/admin/audit-logs", "host": ["{{baseUrl}}"], "path": ["api", "admin", "audit-logs"] }
+          }
+        }
+      ]
+    }
+  ]
+}
